@@ -1,0 +1,80 @@
+import requests
+import os
+import re
+os.system ("cls")
+print('67')
+rootDirectory = 'C:\\Users\\nto-le01\\Desktop\\code\\'
+#rootDirectory = 'C:\\code\\'
+#************** READ DICTIONARY***************
+file_words= open(rootDirectory + 'dictionary.csv', 'r')
+lines_dictionary = file_words.readlines()
+file_words.close()
+List_Neg = []
+List_Pos = []
+List_Shares = []
+print('4')
+for line in lines_dictionary:
+    List_Words_dictionary=line.split(sep=",")
+    if(str(List_Words_dictionary[7]).strip()!='0'):List_Neg.append(List_Words_dictionary[0].strip())
+    if(str(List_Words_dictionary[8]).strip()!='0'):List_Pos.append(List_Words_dictionary[0].strip())
+
+print('3')
+#************** RESET RESULT AND ERROR FILES***************
+file1 = open(rootDirectory + 'result.csv', 'w')
+file1.close()
+file1 = open(rootDirectory + 'result.csv','a')
+file1.write('ric,year,month,member_name,Positive,Negative,Language,Tone,Pos Words,Neg Words\r')
+file1.close()
+print('5')
+file_excel= open(rootDirectory + 'Q&A Transcripts-Analyst.csv', 'r')
+lines_excel = []
+lines_excel = file_excel.readlines()
+print('2')
+for line_excel in lines_excel:
+    print('1')
+    file = open(rootDirectory + 'result.csv','a')
+    List_excel=line_excel.split(sep=",")
+    ric=List_excel[0]
+    if(ric=='ric'):continue
+    year=List_excel[1]
+    month=List_excel[2]
+    member_name=List_excel[3]
+    content=List_excel[4].upper()
+    FYEAR=List_excel[5]
+    CUSIP=List_excel[6]
+    EXEC_FULL_NAME=List_excel[7]
+    count_pos=0
+    count_neg=0
+    pos_word_of_analyst=''
+    neg_word_of_analyst=''
+    for pos_word in List_Pos:
+        if pos_word in content:
+            pos_word_of_analyst = pos_word_of_analyst + " " + pos_word
+            count_pos=count_pos+1
+    for neg_word in List_Neg:
+        if neg_word in content:
+            neg_word_of_analyst = neg_word_of_analyst + " " + neg_word
+            count_neg=count_neg+1
+    file = open(rootDirectory + 'result.csv','a')
+    file.write (ric + " ,")
+    file.write (str(year) + " ,")
+    file.write (str(month) + " ,")
+    file.write (member_name + " ,")
+    file.write (str(count_pos) + " ,")
+    file.write (str(count_neg) + " ,")
+    negdifference=count_pos - count_neg
+    posdifference = count_pos + count_neg
+    tone=0
+    if posdifference!=0:
+        tone = negdifference / posdifference
+    if tone>0: 
+        file.write ("Positive Language,")
+    if tone<0: 
+        file.write ("Negative Language,")
+    if tone==0: 
+        file.write ("Neutral Language,")
+    file.write (str(tone) +",")
+    file.write (pos_word_of_analyst +",")
+    file.write (neg_word_of_analyst +",") 
+    file.write ("\r") 
+    file.close()
